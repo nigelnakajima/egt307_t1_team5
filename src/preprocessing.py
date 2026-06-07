@@ -8,6 +8,7 @@ from config import load_config
 # Load Config
 config = load_config("config.yaml")
 target_col = config["target_col"]
+
 class DataPreprocessor:
     def __init__(self):
         self.target_col = target_col

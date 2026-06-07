@@ -8,9 +8,10 @@
 * cleaning.py - Nigel
 * config.py- Nigel
 * ingestion.py-Nigel
-* preprocessing.py - Yihao
+* preprocessing.py - Jayden
 * synthetic_data_generation.py - Jayden
 * training.py - Yihao
+* evaluate.py - Yihao
 
 ## How to run the pipeline
 1. Ensure you have Docker installed and running.
