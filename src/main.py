@@ -10,7 +10,6 @@ Program Flow:
 from config import load_config
 from ingestion import load_data_from_db
 from cleaning import DataCleaner
-from feature_engineering import FeatureEngineer
 from preprocessing import DataPreprocessor
 from synthetic_data_generation import generate_data
 from training import ModelTrainer
@@ -24,23 +23,19 @@ try:
     # Clean Data
     cleaner = DataCleaner()
     df = cleaner.process(df)
-
-    # Feature Engineering
-    engineer = FeatureEngineer()
-    df = engineer.add_features(df)
     
     # Split Data
     preprocessor = DataPreprocessor()
     X_train, X_test, y_train, y_test = preprocessor.process(df)
 
-    # Generate synthetic data
+    # Generate Synthetic Data
     X_train, y_train = generate_data(X_train, y_train)
     
-    # Train Model
+    # Train Models
     trainer = ModelTrainer("activity_level", X_train, y_train, X_test, y_test)
     trainer.run()
 
-    # Get latest saved model folder
+    # Load Saved Models
     save_root = "saved_models"
     latest_folder = max(
         [os.path.join(save_root, d) for d in os.listdir(save_root)],
@@ -58,7 +53,6 @@ try:
     )
 
     evaluator.evaluate_models()
-    evaluator.export_results()
 
 except ValueError as e:
     print(f"Aborting pipeline: {e}")

@@ -7,7 +7,6 @@
 ## Contributions:
 * cleaning.py - Nigel
 * config.py- Nigel
-* feature_engineering.py - Jayden
 * ingestion.py-Nigel
 * preprocessing.py - Yihao
 * synthetic_data_generation.py - Jayden
@@ -43,6 +42,11 @@ Dimensionality reduction could be an effective method if the input data becomes 
 Lastly, training a random forest model revealed that the categorical data had little to no importance to predicting activity level and can be dropped without any drawback.
 
 ## Explain and justify features that are engineered
+For feature engineering, the first step we did was to use KNN to impute missing data which ensures that we do not lose any valuable information. To ensure that imputation was effective, we compared the before and after information matrix to ensure that information was not lost.
+
+Secondly, we dropped the categorical data as we found that they did not contribute much to predicting activity level as mentioned in our EDA. This proved effective as it did not change the metrics of our selected models.
+
+Lastly, we generated synthetic data using SMOTE which works by finding k-nearest neighbours and interpolating data that fits between them. This was effective as activity level had an unbalanced number of classes and this helped to create more data for the minority classes.
 
 ## Explanation of choice of models and justify any tuning methods used
 We used Random Forest, XGBoost, and SVM because they are popular machine learning models that performs well on classification tasks and handle different types of data.

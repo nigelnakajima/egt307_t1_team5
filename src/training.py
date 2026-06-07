@@ -2,7 +2,6 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 import pandas as pd
 import json
 import os
@@ -12,13 +11,10 @@ from datetime import datetime
 from sklearn.utils.class_weight import compute_sample_weight
 import numpy as np
 from sklearn.model_selection import train_test_split
-from lightgbm import LGBMClassifier, log_evaluation, early_stopping
-from imblearn.ensemble import BalancedRandomForestClassifier
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
 import importlib
 import joblib
 from config import load_config
+
 config = load_config("config.yaml")
 random_state = config["random"]
 test_size = config["test_size"]
