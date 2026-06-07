@@ -17,6 +17,7 @@ from imblearn.ensemble import BalancedRandomForestClassifier
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import importlib
+import joblib
 from config import load_config
 config = load_config("config.yaml")
 random_state = config["random"]
@@ -143,6 +144,30 @@ class ModelTrainer:
             print(f"Best params for {name}: {search.best_params_}")
             
         print("All models trained successfully")
+        # save model weights here
+        self.save_models()
+
+
+    def save_models(self, save_dir="saved_models"):
+        """
+        Saves trained models (weights) and label encoder.
+        """
+
+        os.makedirs(save_dir, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        folder = os.path.join(save_dir, timestamp)
+        os.makedirs(folder, exist_ok=True)
+
+        # Save each trained model
+        for name, model in self.best_models.items():
+            file_path = os.path.join(folder, f"{name}.joblib")
+            joblib.dump(model, file_path)
+
+        # Save label encoder
+        joblib.dump(self.label_encoder, os.path.join(folder, "label_encoder.joblib"))
+
+        print(f"Models saved successfully in: {folder}")
 
 
     def run(self):

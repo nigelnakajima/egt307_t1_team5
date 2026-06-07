@@ -229,3 +229,5 @@ __marimo__/
 # OS junk files
 .DS_Store
 Thumbs.db
+saved_models/
+experiment_log.csv

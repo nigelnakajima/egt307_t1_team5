@@ -6,53 +6,63 @@ from sklearn.metrics import (
     classification_report,
     confusion_matrix
 )
+
 import pandas as pd
 import os
 from datetime import datetime
+import joblib
 
 
 class Evaluation:
 
-    def __init__(self, best_models, label_encoder, X_train, X_test, y_test):
+    def __init__(self, model_path, X_train, X_test, y_test):
         """
-        Initializes the Evaluation class.
+        Initializes Evaluation using SAVED models.
 
         Args:
-            best_models: Dictionary of trained machine learning models
-            label_encoder: Encoder used to transform target labels
-            X_train: Training features (used for feature importance)
-            X_test: Testing features
-            y_test: Actual test labels
+            model_path (str): Path to saved model folder (timestamp folder)
+            X_train: Training features (for feature importance)
+            X_test: Test features
+            y_test: True labels
         """
-        self.best_models = best_models
-        self.label_encoder = label_encoder
+
+        self.model_path = model_path
         self.X_train = X_train
         self.X_test = X_test
         self.y_test = y_test
 
+    
+        # Load all saved models
+        self.best_models = {}
+        for file in os.listdir(model_path):
+            if file.endswith(".joblib") and file != "label_encoder.joblib":
+                model_name = file.replace(".joblib", "")
+                self.best_models[model_name] = joblib.load(
+                    os.path.join(model_path, file)
+                )
+
+        # Load label encoder
+        self.label_encoder = joblib.load(
+            os.path.join(model_path, "label_encoder.joblib")
+        )
+
     def evaluate_models(self):
         """
-        Evaluates all trained models using test data.
-
-        Args:
-            X_test: Testing features
-            y_test: Actual testing labels
+        Evaluates all loaded models using test data.
         """
 
         X_test = self.X_test
         y_test = self.label_encoder.transform(self.y_test)
 
-        # Store model evaluation results
         self.results = {}
 
-        # Evaluate each trained model
         for name, model in self.best_models.items():
 
             print(f"Evaluating {name}...")
 
             preds = model.predict(X_test)
 
-            # Compute evaluation metrics
+            # Metrics
             self.results[name] = {
                 "accuracy": accuracy_score(y_test, preds),
                 "precision": precision_score(y_test, preds, average='weighted'),
@@ -60,79 +70,54 @@ class Evaluation:
                 "f1_score": f1_score(y_test, preds, average='weighted')
             }
 
-            print(f"Results for {name}: {self.results[name]}")
+            print(self.results[name])
             print("--------------------------")
 
+            # Classification report
             print(classification_report(
                 y_test,
                 preds,
                 target_names=self.label_encoder.classes_
             ))
 
-            cm = confusion_matrix(y_test, preds)
-            print(cm)
+            # Confusion matrix
+            print(confusion_matrix(y_test, preds))
 
-            # Feature importance (ONLY works for tree-based models)
+
+            # Feature importance (tree models only)
             if hasattr(model, "feature_importances_"):
 
                 importances = model.feature_importances_
                 feature_names = self.X_train.columns
 
-                # Create ranking of feature importance
                 feat_imp = pd.Series(
                     importances,
                     index=feature_names
                 ).sort_values(ascending=False)
 
-                print(feat_imp.head(100))
+                print(feat_imp.head(20))
 
         print("Model evaluation completed")
-
         return self.results
 
     def export_results(self, filename="experiment_log.csv"):
         """
-        Appends the results and best parameters to a single CSV summary file.
-
-        This function:
-        - Flattens evaluation metrics
-        - Saves model performance
-        - Stores hyperparameters used
+        Saves evaluation results to CSV log file.
         """
 
-        # Prepare data for a single row
-        # Flattening results for CSV structure
         row_data = {
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "model_folder": self.model_path
         }
 
-        # Add accuracy/precision/recall/f1 for each model
         for name, metrics in self.results.items():
+            for metric_name, value in metrics.items():
+                row_data[f"{name}_{metric_name}"] = value
 
-            # If metrics is a dictionary, flatten it
-            if isinstance(metrics, dict):
-                for metric_name, value in metrics.items():
-                    row_data[f"{name}_{metric_name}"] = value
-
-            else:
-                # Fallback for simple accuracy float
-                row_data[f"{name}_accuracy"] = metrics
-
-        # Store best model hyperparameters as string (for logging)
-        params_str = {
-            name: str(model.get_params())
-            for name, model in self.best_models.items()
-        }
-
-        row_data["parameters"] = str(params_str)
-
-        # Convert to DataFrame
         df = pd.DataFrame([row_data])
 
-        # Check if file already exists
         file_exists = os.path.isfile(filename)
 
-        # Append results to CSV
         df.to_csv(
             filename,
             mode='a',

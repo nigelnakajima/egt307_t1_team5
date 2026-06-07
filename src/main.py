@@ -15,6 +15,7 @@ from preprocessing import DataPreprocessor
 from synthetic_data_generation import generate_data
 from training import ModelTrainer
 from evaluate import Evaluation
+import os
 
 try:
     # Load Data
@@ -37,16 +38,23 @@ try:
     
     # Train Model
     trainer = ModelTrainer("activity_level", X_train, y_train, X_test, y_test)
-    best_models, label_encoder = trainer.run()
+    trainer.run()
 
+    # Get latest saved model folder
+    save_root = "saved_models"
+    latest_folder = max(
+        [os.path.join(save_root, d) for d in os.listdir(save_root)],
+        key=os.path.getctime
+    )
 
-    # Evaluate Models
+    print(f"Using saved models from: {latest_folder}")
+
+    # Evaluate Models 
     evaluator = Evaluation(
-        trainer.best_models,
-        trainer.label_encoder,
-        X_train,
-        X_test,
-        y_test
+        model_path=latest_folder,
+        X_train=X_train,
+        X_test=X_test,
+        y_test=y_test
     )
 
     evaluator.evaluate_models()
