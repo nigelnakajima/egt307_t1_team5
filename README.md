@@ -15,15 +15,20 @@
 
 ## How to run the pipeline
 1. Ensure you have Docker installed and running.
-2. Navigate to project folder
-3. To build the pipeline, run: docker compose build pipeline
-4. To run it run: docker compose up pipeline
+2. Navigate to project folder in terminal
+3. To build the pipeline, run:
+```docker compose build pipeline```
+4. To run the pipeline run:
+```docker compose up pipeline```
 
 ## How to start development environment
 1. Ensure you have Docker installed and running.
-2. Navigate to project folder
-3. To build the pipeline, run: docker compose build jupyter
-4. To run it run: docker compose up jupyter
+2. Navigate to project folder in terminal
+3. To build the development environment, run:
+```docker compose build jupyter```
+4. To run the development environment, run:
+```docker compose up jupyter```
+5. Open the development environment by clicking the link generated
 
 ## Summary of EDA key findings
 There are missing data in 4 columns:Humidity, MetalOxideSensor_Unit2, CO_GasSensor, and Ambient Light Level. These missing values appear to be missing completely at random.
