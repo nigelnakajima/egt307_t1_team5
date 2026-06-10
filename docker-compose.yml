@@ -1,7 +1,7 @@
 services:
   jupyter:
     image: jupyter/scipy-notebook:latest
-    container_name: egt307_jupyter_notebook
+    container_name: egt309_jupyter_notebook
     working_dir: /work
     ports:
       - "8888:8888"
@@ -14,7 +14,7 @@ services:
 
   pipeline:
       build: .
-      container_name: egt307_pipeline
+      container_name: egt309_pipeline
       volumes:
         - ./src:/work/src
         - ./data:/work/data

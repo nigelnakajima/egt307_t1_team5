@@ -1,4 +1,4 @@
-# egt307_t1_team5
+# egt309_t1_team5
 ## Team members:
 * Nigel
 * Yihao
